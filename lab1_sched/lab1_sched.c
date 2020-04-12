@@ -57,6 +57,35 @@ Process Dequeue(Queue *queue)
     return re;
 }
 
+void sort(Process *process,int n){
+    int i,j;
+    Process tmp;
+    for(i=n-1;i>0;i--){
+        for(j=0;j<i;j++){
+            if(process[j].arrive_time>process[j+1].arrive_time){
+                tmp = process[j];
+                process[j] = process[j+1];
+                process[j+1] = tmp;
+            }
+        }
+    }
+}
+
+void FIFO(Process *process,int n){
+    int i;
+    Queue queue;
+    for (i=0;i<n;i++){
+        Enqueue(&queue,process[i]);
+    }
+    while(!IsEmpty(&queue)){
+        Process run = Dequeue(&queue);
+        for(i=0;i<run.run_time;i++){
+            printf("%c ",run.name);
+        }
+    }
+}
+
+
 /*
  * you need to implement FCFS, RR, SPN, SRT, HRRN, MLFQ scheduler. 
  */

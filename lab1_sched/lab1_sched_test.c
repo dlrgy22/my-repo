@@ -18,27 +18,22 @@
 
 int main(void)
 {
-    int i;
-    Queue queue;
- 
-    InitQueue(&queue);//큐 초기화
-    for (i = 1; i <= 5; i++)//1~5까지 큐에 보관
-    {
-        Process pro;
-        scanf("%c",&pro.name);
-        scanf("%d",&pro.time);
+    int i,n;
+    printf("프로세스의 개수를 입력하시오 : ");
+    scanf("%d",&n);
+    getchar();
+    Process process[n];
+    for (i=0;i<n;i++){
+        printf("프로세스 이름 : ");
+        scanf("%c",&process[i].name);
         getchar();
-        Enqueue(&queue,pro);
-        //Enqueue(&queue, i);
+        printf("프로세스 도착시간 : ");
+        scanf("%d",&process[i].arrive_time);
+        printf("프로세스 실행시간 : ");
+        scanf("%d",&process[i].run_time);
+        getchar();
     }
-    while (!IsEmpty(&queue))//큐가 비어있지 않다면 반복
-    {
-        Process pro;
-        pro = Dequeue(&queue);
-        printf("%c %d\n",pro.name,pro.time);
-        //printf("%d ", Dequeue(&queue));//큐에서 꺼내온 값 출력
-    }
-    printf("\n");
-    return 0;
+    sort(process,n);
+    FIFO(process,n);
 }
 

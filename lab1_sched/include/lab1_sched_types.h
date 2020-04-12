@@ -22,7 +22,8 @@
 #include <string.h>
 typedef struct process{
     char name;
-    int time;
+    int run_time;
+    int arrive_time;
 }Process;
 typedef struct Node //노드 정의
 {
@@ -39,6 +40,9 @@ void InitQueue(Queue *queue);//큐 초기화
 int IsEmpty(Queue *queue); //큐가 비었는지 확인
 void Enqueue(Queue *queue, Process data); //큐에 보관
 Process Dequeue(Queue *queue); //큐에서 꺼냄
+void sort(Process *process,int n);
+void FIFO(Process *process,int n);
+
 
 #endif /* LAB1_HEADER_H*/
 
