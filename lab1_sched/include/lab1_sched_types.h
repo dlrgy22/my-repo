@@ -41,7 +41,7 @@ int IsEmpty(Queue *queue); //큐가 비었는지 확인
 void Enqueue(Queue *queue, Process data); //큐에 보관
 Process Dequeue(Queue *queue); //큐에서 꺼냄
 void sort(Process *process,int n);
-void FIFO(Process *process,int n);
+void FIFO();
 
 
 #endif /* LAB1_HEADER_H*/

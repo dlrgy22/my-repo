@@ -71,19 +71,41 @@ void sort(Process *process,int n){
     }
 }
 
-void FIFO(Process *process,int n){
-    int i;
+void FIFO(){
+    int i,n;
+    printf("프로세스의 개수를 입력하시오 : ");
+    scanf("%d",&n);
+    getchar();
     Queue queue;
+    Process process[n];
+    for (i=0;i<n;i++){
+        printf("프로세스 이름 : ");
+        scanf("%c",&process[i].name);
+        getchar();
+        printf("프로세스 도착시간 : ");
+        scanf("%d",&process[i].arrive_time);
+        printf("프로세스 실행시간 : ");
+        scanf("%d",&process[i].run_time);
+        getchar();
+    }
+    sort(process,n);
     for (i=0;i<n;i++){
         Enqueue(&queue,process[i]);
     }
+    int time = 1;
     while(!IsEmpty(&queue)){
         Process run = Dequeue(&queue);
+        while(time<run.arrive_time){
+            time +=1;
+            printf("X ");
+        }
         for(i=0;i<run.run_time;i++){
+            time +=1;
             printf("%c ",run.name);
         }
     }
 }
+
 
 
 /*
