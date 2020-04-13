@@ -5,6 +5,7 @@ typedef struct process{
     char name;
     int run_time;
     int arrive_time;
+    int boosting;
 }Process;
 
 typedef struct Node //노드 정의
@@ -30,10 +31,25 @@ void FIFO(void);
 void RR(void);
 void MLFQ(void);
 
+void a(){
+    Process run;
+    run.arrive_time = 1;
+    run.boosting = 1;
+    run.name = 'A';
+    run.run_time = 1;
+    Queue queue[3];
+    Enqueue(&queue[2],run);
+    int i = 1;
+    run = Dequeue(&queue[i]);
+    printf("1");
+}
 int main(void)
 {
     //FIFO();
-    RR();
+    //RR();
+    //a();
+    MLFQ();
+    
 }
  
 void InitQueue(Queue *queue)
@@ -151,7 +167,7 @@ void RR(){
     sort(process,n);
     printf("time qunatum을 입력하시오 : ");
     scanf("%d",&time_quantum);
-    int time = 1;
+    int time = 0;
     int fin_count = 0;
     Process run;
     run.run_time =0;
@@ -205,5 +221,75 @@ void MLFQ(){
         getchar();
     }
     sort(process,n);
-    Queue queue_1;
+    Queue queue[5];
+    for(i=1;i<5;i++){
+        InitQueue(&queue[i]);
+    }
+    int time_quantum[5],fin_count = 0,time = 0,visit[n],boosting_time,check_run=0;
+    Process run;
+    run.run_time =0;
+    for(i=0;i<n;i++){
+        visit[i] = 0;
+        process[i].boosting = 0;
+    }
+    for (i=1;i<=4;i++){
+        printf("%d번째 queue의 time_quantum을 입력하시오 : ",i);
+        scanf("%d",&time_quantum[i]);
+    }
+    printf("boosting 주기를 입력하시오 : ");
+    scanf("%d",&boosting_time);
+    while(fin_count != n){
+        for (i=0;i<n;i++){
+            if(process[i].arrive_time<=time&&visit[i]==0){
+                Enqueue(&queue[1],process[i]);
+                visit[i] =1;
+            }
+        }
+        if(check_run==1){
+            Enqueue(&queue[1],run);
+            check_run = 0;
+        }
+        for(i=1;i<=4;i++){
+            if(!IsEmpty(&queue[i])){
+                run = Dequeue(&queue[i]);
+                for(int j=0;j<time_quantum[i];j++){
+                    run.run_time -= 1;
+                    time += 1;
+                    printf("%c ",run.name);
+                    if(run.run_time == 0){
+                        fin_count += 1;
+                        break;
+                    }
+                }
+                if (run.run_time>0){
+                    if(i <= 3){
+                        for(int j=1;j<=4;j++){
+                            if(!IsEmpty(&queue[j])){
+                                Enqueue(&queue[i+1],run);
+                                break;
+                            }
+                            else if(IsEmpty(&queue[j])&&j==4){
+                                check_run = 1;
+                            }
+                        }
+                    }
+                    else{
+                        run.boosting += 1;
+                        if (run.boosting == boosting_time){
+                            run.boosting = 0;
+                            Enqueue(&queue[1],run);
+                        }
+                        else{
+                            Enqueue(&queue[4],run);
+                        }
+                    }
+                }
+                break;
+            }
+            else if(IsEmpty(&queue[i])&&i==4){
+                printf("X ");
+                time += 1;
+            }
+        }
+    }
 }
