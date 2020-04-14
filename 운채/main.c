@@ -6,6 +6,8 @@ typedef struct process{
     int run_time;
     int arrive_time;
     int boosting;
+    int tickets;
+    int stride;
 }Process;
 
 typedef struct Node //노드 정의
@@ -27,28 +29,18 @@ int IsEmpty(Queue *queue); //큐가 비었는지 확인
 void Enqueue(Queue *queue, Process data); //큐에 보관
 Process Dequeue(Queue *queue); //큐에서 꺼냄
 void sort(Process *process,int n);
+int gcd(int n1,int n2);
 void FIFO(void);
 void RR(void);
 void MLFQ(void);
+void Stride(void);
 
-void a(){
-    Process run;
-    run.arrive_time = 1;
-    run.boosting = 1;
-    run.name = 'A';
-    run.run_time = 1;
-    Queue queue[3];
-    Enqueue(&queue[2],run);
-    int i = 1;
-    run = Dequeue(&queue[i]);
-    printf("1");
-}
 int main(void)
 {
     //FIFO();
     //RR();
-    //a();
-    MLFQ();
+    //MLFQ();
+    Stride();
     
 }
  
@@ -110,6 +102,21 @@ void sort(Process *process,int n){
             }
         }
     }
+}
+
+int gcd(int num1,int num2){
+    int tmp;
+    if(num1<num2){
+        tmp = num1;
+        num1 = num2;
+        num2 = tmp;
+    }
+    while(num2 != 0){
+        tmp = num1%num2;
+        num1 = num2;
+        num2 = tmp;
+    }
+    return num1;
 }
 
 void FIFO(){
@@ -293,3 +300,52 @@ void MLFQ(){
         }
     }
 }
+
+void Stride(){
+    int i,n,num = 1;
+    printf("프로세서의 개수를 입력하시오 : ");
+    scanf("%d",&n);
+    getchar();
+    Process process[n];
+    int pass_value[n];
+    for(i = 0;i<n;i++){
+        pass_value[i]=0;
+    }
+    for(i=0;i<n;i++){
+        printf("프로세서의 이름을 입력하시오 : ");
+        scanf("%c",&process[i].name);
+        printf("프로세서의 티켓수를 입력하시오 : ");
+        scanf("%d",&process[i].tickets);
+        getchar();
+    }
+    for(i=0;i<n;i++){
+        num *=process[i].tickets;
+    }
+    for(i=0;i<n;i++){
+        process[i].stride = num/process[i].tickets;
+    }
+    while(1){
+        int run = 0;
+        for(i = 0;i<n;i++){
+            if(pass_value[i] < pass_value[run]){
+                run = i;
+            }
+        }
+        printf("%c ",process[run].name);
+        pass_value[run] += process[run].stride;
+        int check = 0;
+        for(i=0;i<n-1;i++){
+            if(pass_value[i] == pass_value[i+1]){
+                check +=1;
+            }
+            else{
+                break;
+            }
+        }
+        if (check == n-1){
+            break;
+        }
+        check = 0;
+    }
+}
+
