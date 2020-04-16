@@ -24,25 +24,41 @@ typedef struct process{
     char name;
     int run_time;
     int arrive_time;
+    int start_time;
+    int end_time;
+    int first;
+    int boosting;
+    int tickets;
+    int stride;
 }Process;
+
 typedef struct Node //노드 정의
 {
     Process data;
     struct Node *next;
 }Node;
+ 
+ 
 typedef struct Queue //Queue 구조체 정의
 {
     Node *front; //맨 앞(꺼낼 위치)
     Node *rear; //맨 뒤(보관할 위치)
     int count;//보관 개수
 }Queue;
+ 
 void InitQueue(Queue *queue);//큐 초기화
 int IsEmpty(Queue *queue); //큐가 비었는지 확인
 void Enqueue(Queue *queue, Process data); //큐에 보관
 Process Dequeue(Queue *queue); //큐에서 꺼냄
 void sort(Process *process,int n);
-void FIFO();
-
+int gcd(int n1,int n2);
+void input(Process *process,int n);
+void FIFO(void);
+void RR(void);
+void MLFQ(void);
+void Stride(void);
+void Turnaround_time(Process *process,int n);
+void Response_time(Process *process,int n);
 
 #endif /* LAB1_HEADER_H*/
 
