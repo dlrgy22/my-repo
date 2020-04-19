@@ -5,6 +5,9 @@ typedef struct process{
     char name;
     int run_time;
     int arrive_time;
+    int start_time;
+    int end_time;
+    int first;
     int boosting;
     int tickets;
     int stride;
@@ -30,18 +33,36 @@ void Enqueue(Queue *queue, Process data); //큐에 보관
 Process Dequeue(Queue *queue); //큐에서 꺼냄
 void sort(Process *process,int n);
 int gcd(int n1,int n2);
+void input(Process *process,int n);
 void FIFO(void);
 void RR(void);
 void MLFQ(void);
 void Stride(void);
+void Turnaround_time(Process *process,int n);
+void Response_time(Process *process,int n);
 
-int main(void)
+int main(int argc, char* argv[])
 {
-    //FIFO();
-    //RR();
-    //MLFQ();
-    Stride();
+    int number = 0;
+    printf("1번 : FIFO \n2번 : RR\n3번 : MLFQ\n4번 : Stride\n");
+    printf("숫자를 입력하시오 : ");
+    scanf("%d",&number);
     
+    if(number == 1){
+        FIFO();
+    }
+    else if(number == 2){
+        RR();
+    }
+    else if(number == 3){
+        MLFQ();
+    }
+    else if(number == 4){
+        Stride();
+    }
+    else{
+        printf("잘못입력하셨습니다.");
+    }
 }
  
 void InitQueue(Queue *queue)
@@ -89,6 +110,20 @@ Process Dequeue(Queue *queue)
     return re;
 }
 
+void input(Process *process,int n){
+    int i;
+    for (i=0;i<n;i++){
+        printf("프로세스 이름 : ");
+        scanf("%c",&process[i].name);
+        getchar();
+        printf("프로세스 도착시간 : ");
+        scanf("%d",&process[i].arrive_time);
+        printf("프로세스 실행시간 : ");
+        scanf("%d",&process[i].run_time);
+        getchar();
+    }
+    sort(process,n);
+}
 
 void sort(Process *process,int n){
     int i,j;
@@ -104,21 +139,6 @@ void sort(Process *process,int n){
     }
 }
 
-int gcd(int num1,int num2){
-    int tmp;
-    if(num1<num2){
-        tmp = num1;
-        num1 = num2;
-        num2 = tmp;
-    }
-    while(num2 != 0){
-        tmp = num1%num2;
-        num1 = num2;
-        num2 = tmp;
-    }
-    return num1;
-}
-
 void FIFO(){
     int i,n;
     printf("프로세스의 개수를 입력하시오 : ");
@@ -126,32 +146,30 @@ void FIFO(){
     getchar();
     Queue queue;
     Process process[n];
-    for (i=0;i<n;i++){
-        printf("프로세스 이름 : ");
-        scanf("%c",&process[i].name);
-        getchar();
-        printf("프로세스 도착시간 : ");
-        scanf("%d",&process[i].arrive_time);
-        printf("프로세스 실행시간 : ");
-        scanf("%d",&process[i].run_time);
-        getchar();
-    }
-    sort(process,n);
+    Process Metrics[n];
+    input(process,n);
     for (i=0;i<n;i++){
         Enqueue(&queue,process[i]);
     }
-    int time = 1;
+    int time = 0,c=0;
     while(!IsEmpty(&queue)){
         Process run = Dequeue(&queue);
         while(time<run.arrive_time){
             time +=1;
             printf("X ");
         }
+        run.start_time  = time;
         for(i=0;i<run.run_time;i++){
             time +=1;
             printf("%c ",run.name);
         }
+        run.end_time = time;
+        Metrics[c] = run;
+        c+=1;
     }
+    printf("\n");
+    Turnaround_time(Metrics,n);
+    Response_time(Metrics,n);
 }
 
 void RR(){
@@ -160,27 +178,20 @@ void RR(){
     scanf("%d",&n);
     getchar();
     Queue queue;
+    InitQueue(&queue);
     Process process[n];
-    for (i=0;i<n;i++){
-        printf("프로세스 이름 : ");
-        scanf("%c",&process[i].name);
-        getchar();
-        printf("프로세스 도착시간 : ");
-        scanf("%d",&process[i].arrive_time);
-        printf("프로세스 실행시간 : ");
-        scanf("%d",&process[i].run_time);
-        getchar();
-    }
-    sort(process,n);
+    Process Metrix[n];
+    input(process,n);
     printf("time qunatum을 입력하시오 : ");
     scanf("%d",&time_quantum);
     int time = 0;
-    int fin_count = 0;
+    int fin_count = 0, c = 0;
     Process run;
     run.run_time =0;
     int visit[n];
     for (i=0;i<n;i++){
         visit[i] = 0;
+        process[i].first = 0;
     }
     while(fin_count != n){
         for(i=0;i<n;i++){
@@ -194,11 +205,18 @@ void RR(){
         }
         if(!IsEmpty(&queue)){
             run = Dequeue(&queue);
+            if (run.first == 0){
+                run.first = 1;
+                run.start_time = time;
+            }
             for (i = 0;i<time_quantum;i++){
                 run.run_time -= 1;
                 time +=1;
                 printf("%c ",run.name);
                 if(run.run_time==0){
+                    run.end_time = time;
+                    Metrix[c] = run;
+                    c+=1;
                     fin_count +=1;
                     break;
                 }
@@ -209,6 +227,9 @@ void RR(){
             printf("X ");
         }
     }
+    printf("\n");
+    Turnaround_time(Metrix,n);
+    Response_time(Metrix,n);
 }
 
 void MLFQ(){
@@ -216,28 +237,19 @@ void MLFQ(){
     printf("프로세스의 개수를 입력하시오 : ");
     scanf("%d",&n);
     getchar();
-    Process process[n];
-    for (i=0;i<n;i++){
-        printf("프로세스 이름 : ");
-        scanf("%c",&process[i].name);
-        getchar();
-        printf("프로세스 도착시간 : ");
-        scanf("%d",&process[i].arrive_time);
-        printf("프로세스 실행시간 : ");
-        scanf("%d",&process[i].run_time);
-        getchar();
-    }
-    sort(process,n);
+    Process process[n],Metrix[n];
+    input(process,n);
     Queue queue[5];
     for(i=1;i<5;i++){
         InitQueue(&queue[i]);
     }
-    int time_quantum[5],fin_count = 0,time = 0,visit[n],boosting_time,check_run=0;
+    int time_quantum[5],fin_count = 0,time = 0,visit[n],boosting_time,check_run=0,c=0;
     Process run;
     run.run_time =0;
     for(i=0;i<n;i++){
         visit[i] = 0;
         process[i].boosting = 0;
+        process[i].first = 0;
     }
     for (i=1;i<=4;i++){
         printf("%d번째 queue의 time_quantum을 입력하시오 : ",i);
@@ -259,11 +271,18 @@ void MLFQ(){
         for(i=1;i<=4;i++){
             if(!IsEmpty(&queue[i])){
                 run = Dequeue(&queue[i]);
+                if (run.first == 0){
+                    run.first = 1;
+                    run.start_time = time;
+                }
                 for(int j=0;j<time_quantum[i];j++){
                     run.run_time -= 1;
                     time += 1;
                     printf("%c ",run.name);
                     if(run.run_time == 0){
+                        run.end_time = time;
+                        Metrix[c] = run;
+                        c+=1;
                         fin_count += 1;
                         break;
                     }
@@ -299,6 +318,9 @@ void MLFQ(){
             }
         }
     }
+    printf("\n");
+    Turnaround_time(Metrix,n);
+    Response_time(Metrix,n);
 }
 
 void Stride(){
@@ -348,4 +370,23 @@ void Stride(){
         check = 0;
     }
 }
+
+void Turnaround_time(Process *process,int n){
+    int i;
+    float turnaround_time = 0;
+    for(i=0;i<n;i++){
+        turnaround_time += process[i].end_time - process[i].arrive_time;
+    }
+    printf("turnaround_time : %f\n",turnaround_time/n);
+}
+
+void Response_time(Process *process,int n){
+    int i;
+    float response_time = 0;
+    for(i=0;i<n;i++){
+        response_time += process[i].start_time - process[i].arrive_time;
+    }
+    printf("response_time : %f\n",response_time/n);
+}
+
 

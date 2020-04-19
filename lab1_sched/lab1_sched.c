@@ -120,7 +120,7 @@ void FIFO(){
 }
 
 void RR(){
-    int i,n,time_quantum;
+    int i,n,time_quantum,num;
     printf("프로세스의 개수를 입력하시오 : ");
     scanf("%d",&n);
     getchar();
@@ -129,7 +129,7 @@ void RR(){
     Process Metrix[n];
     input(process,n);
     printf("time qunatum을 입력하시오 : ");
-    scanf("%d",&time_quantum);
+    scanf("%d",&time_quantum)ㅈ;
     int time = 0;
     int fin_count = 0,c=0;
     Process run;
@@ -139,6 +139,7 @@ void RR(){
         visit[i] = 0;
         process[i].first = 0;
     }
+    printf("a");
     while(fin_count != n){
         for(i=0;i<n;i++){
             if(process[i].arrive_time<=time&&visit[i]==0){
@@ -146,6 +147,7 @@ void RR(){
                 visit[i]=1;
             }
         }
+        printf("1");
         if (run.run_time != 0){
             Enqueue(&queue,run);
         }
@@ -156,6 +158,7 @@ void RR(){
                 run.start_time = time;
             }
             for (i = 0;i<time_quantum;i++){
+                printf("2");
                 run.run_time -= 1;
                 time +=1;
                 printf("%c ",run.name);
