@@ -12,51 +12,6 @@
 
 #include "lab1_sched_types.h"
 
-void InitQueue(Queue *queue)
-{
-    queue->front = queue->rear = NULL; //front와 rear를 NULL로 설정
-    queue->count = 0;//보관 개수를 0으로 설정
-}
- 
-int IsEmpty(Queue *queue)
-{
-    return queue->count == 0;    //보관 개수가 0이면 빈 상태
-}
- 
-void Enqueue(Queue *queue, Process data)
-{
-    Node *now = (Node *)malloc(sizeof(Node)); //노드 생성
-    now->data = data;//데이터 설정
-    now->next = NULL;
- 
-    if (IsEmpty(queue))//큐가 비어있을 때
-    {
-        queue->front = now;//맨 앞을 now로 설정
-    }
-    else//비어있지 않을 때
-    {
-        queue->rear->next = now;//맨 뒤의 다음을 now로 설정
-    }
-    queue->rear = now;//맨 뒤를 now로 설정
-    queue->count++;//보관 개수를 1 증가
-}
- 
-Process Dequeue(Queue *queue)
-{
-    Process re;
-    Node *now;
-    if (IsEmpty(queue))//큐가 비었을 때
-    {
-        return re;
-    }
-    now = queue->front;//맨 앞의 노드를 now에 기억
-    re = now->data;//반환할 값은 now의 data로 설정
-    queue->front = now->next;//맨 앞은 now의 다음 노드로 설정
-    free(now);//now 소멸
-    queue->count--;//보관 개수를 1 감소
-    return re;
-}
-
 void input(Process *process,int n){
     int i;
     for (i=0;i<n;i++){
@@ -92,6 +47,7 @@ void FIFO(){
     scanf("%d",&n);
     getchar();
     Queue queue;
+    InitQueue(&queue);
     Process process[n];
     Process Metrics[n];
     input(process,n);
@@ -120,18 +76,19 @@ void FIFO(){
 }
 
 void RR(){
-    int i,n,time_quantum,num;
+    int i,n,time_quantum;
     printf("프로세스의 개수를 입력하시오 : ");
     scanf("%d",&n);
     getchar();
     Queue queue;
+    InitQueue(&queue);
     Process process[n];
     Process Metrix[n];
     input(process,n);
     printf("time qunatum을 입력하시오 : ");
-    scanf("%d",&time_quantum)ㅈ;
+    scanf("%d",&time_quantum);
     int time = 0;
-    int fin_count = 0,c=0;
+    int fin_count = 0, c = 0;
     Process run;
     run.run_time =0;
     int visit[n];
@@ -139,7 +96,6 @@ void RR(){
         visit[i] = 0;
         process[i].first = 0;
     }
-    printf("a");
     while(fin_count != n){
         for(i=0;i<n;i++){
             if(process[i].arrive_time<=time&&visit[i]==0){
@@ -147,7 +103,6 @@ void RR(){
                 visit[i]=1;
             }
         }
-        printf("1");
         if (run.run_time != 0){
             Enqueue(&queue,run);
         }
@@ -158,7 +113,6 @@ void RR(){
                 run.start_time = time;
             }
             for (i = 0;i<time_quantum;i++){
-                printf("2");
                 run.run_time -= 1;
                 time +=1;
                 printf("%c ",run.name);
@@ -337,6 +291,7 @@ void Response_time(Process *process,int n){
     }
     printf("response_time : %f\n",response_time/n);
 }
+
 
 
 /*

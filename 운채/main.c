@@ -145,6 +145,7 @@ void FIFO(){
     scanf("%d",&n);
     getchar();
     Queue queue;
+    InitQueue(&queue);
     Process process[n];
     Process Metrics[n];
     input(process,n);
