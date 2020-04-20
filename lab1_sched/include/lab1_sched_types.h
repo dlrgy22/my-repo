@@ -20,16 +20,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-typedef struct process{
-    char name;
-    int run_time;
-    int arrive_time;
-    int start_time;
-    int end_time;
-    int first;
-    int boosting;
-    int tickets;
-    int stride;
+typedef struct process{                     //프로세스 구조체
+    char name;                              //이름
+    int run_time;                           //총 실행시간
+    int arrive_time;                        //프로세스 도착시간
+    int start_time;                         //프로세스 시작시간
+    int end_time;                           //프로세스가 끝나는 시간
+    int first;                              //해당 프로세스가 처음 실행되는지 확인할때 사용
+    int boosting;                           //부스팅주기와 비교하여 부스팅 실행여부 판단
+    int tickets;                            //Stride 스케쥴링할때 프로세스에 줄 티켓값
+    int stride;                             //프로세스의 stride값
 }Process;
 
 typedef struct Node //노드 정의
@@ -50,15 +50,14 @@ void InitQueue(Queue *queue);//큐 초기화
 int IsEmpty(Queue *queue); //큐가 비었는지 확인
 void Enqueue(Queue *queue, Process data); //큐에 보관
 Process Dequeue(Queue *queue); //큐에서 꺼냄
-void sort(Process *process,int n);
-int gcd(int n1,int n2);
-void input(Process *process,int n);
-void FIFO(void);
-void RR(void);
-void MLFQ(void);
-void Stride(void);
-void Turnaround_time(Process *process,int n);
-void Response_time(Process *process,int n);
+void sort(Process *process,int n); //프로세스를 arrive_time순으로 정렬
+void input(Process *process,int n); // 프로세스정보를 입력
+void FIFO(void);                    //FIFO 스케쥴링
+void RR(void);                      //라운드로빈 스케줄링
+void MLFQ(void);                    //MLFQ 스케쥴링
+void Stride(void);                  //Stride 스케쥴링
+void Turnaround_time(Process *process,int n);   //Turnaround_time 스케쥴링
+void Response_time(Process *process,int n);     //Response_time 스케쥴링
 
 #endif /* LAB1_HEADER_H*/
 
